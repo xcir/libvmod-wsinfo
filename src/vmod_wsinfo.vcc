@@ -1,0 +1,28 @@
+#
+# Copyright Shohei Tanaka(@xcir)  (c) 2024.
+# https://github.com/xcir/libvmod-xcounter/
+#
+
+$Module wsinfo 3 "workspace info VMOD"
+$ABI vrt
+
+DESCRIPTION
+===========
+
+vmod_wsinfo retrieves workspace_(client|backend|session|thread) usage.
+
+$Function INT  size(ENUM {request, session, thread} workspace=request)
+
+Description
+	workspace size
+
+$Function INT  free(ENUM {request, session, thread} workspace=request)
+
+Description
+	workspace free size
+
+$Function REAL per(ENUM {request, session, thread} workspace=request)
+
+Description
+	workspace free size(%)
+

@@ -1,0 +1,89 @@
+varnishtest "Test wsinfo vmod"
+
+server s1 {
+       rxreq
+       txresp
+} -start
+
+varnish v1 -arg "-p workspace_client=128k -p workspace_backend=64k -p workspace_session=1k -p workspace_thread=2k"  -vcl+backend {
+	import ${vmod_wsinfo};
+
+	sub vcl_deliver {
+		set resp.http.s = wsinfo.size();
+		set resp.http.f = wsinfo.free();
+		set resp.http.p = wsinfo.per();
+
+		set resp.http.s2 = wsinfo.size(session);
+		set resp.http.f2 = wsinfo.free(session);
+		set resp.http.p2 = wsinfo.per(session);
+
+		set resp.http.s3 = wsinfo.size(thread);
+		set resp.http.f3 = wsinfo.free(thread);
+		set resp.http.p3 = wsinfo.per(thread);
+
+	}
+	sub vcl_backend_response {
+		set beresp.http.bs = wsinfo.size();
+		set beresp.http.bf = wsinfo.free();
+		set beresp.http.bp = wsinfo.per();
+
+		set beresp.http.bs2 = wsinfo.size(session);
+		set beresp.http.bf2 = wsinfo.free(session);
+		set beresp.http.bp2 = wsinfo.per(session);
+
+		set beresp.http.bs3 = wsinfo.size(thread);
+		set beresp.http.bf3 = wsinfo.free(thread);
+		set beresp.http.bp3 = wsinfo.per(thread);
+
+	}
+} -start
+
+
+client c1 {
+	txreq -url "/"
+	rxresp
+	expect resp.status == "200"
+	expect resp.http.s >= 100000
+	expect resp.http.s <= 150000
+	expect resp.http.f >= 100000
+	expect resp.http.f <= 150000
+	expect resp.http.p >= 10
+	expect resp.http.p <= 100
+
+	expect resp.http.s2 >= 500
+	expect resp.http.s2 <= 1100
+	expect resp.http.f2 >= 500
+	expect resp.http.f2 <= 1100
+	expect resp.http.p2 >= 10
+	expect resp.http.p2 <= 100
+
+	expect resp.http.s3 >= 1500
+	expect resp.http.s3 <= 2100
+	expect resp.http.f3 >= 1500
+	expect resp.http.f3 <= 2100
+	expect resp.http.p3 >= 10
+	expect resp.http.p3 <= 100
+
+	expect resp.http.bs >= 30000
+	expect resp.http.bs <= 70000
+	expect resp.http.bf >= 30000
+	expect resp.http.bf <= 70000
+	expect resp.http.bp >= 10
+	expect resp.http.bp <= 100
+
+	expect resp.http.bs2 >= 500
+	expect resp.http.bs2 <= 1100
+	expect resp.http.bf2 >= 500
+	expect resp.http.bf2 <= 1100
+	expect resp.http.bp2 >= 10
+	expect resp.http.bp2 <= 100
+
+	expect resp.http.bs3 >= 1500
+	expect resp.http.bs3 <= 2100
+	expect resp.http.bf3 >= 1500
+	expect resp.http.bf3 <= 2100
+	expect resp.http.bp3 >= 10
+	expect resp.http.bp3 <= 100
+
+} -run
+
