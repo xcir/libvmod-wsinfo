@@ -1,6 +1,6 @@
 #
 # Copyright Shohei Tanaka(@xcir)  (c) 2024.
-# https://github.com/xcir/libvmod-xcounter/
+# https://github.com/xcir/libvmod-wsinfo/
 #
 
 $Module wsinfo 3 "workspace info VMOD"
