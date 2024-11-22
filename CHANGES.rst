@@ -1,4 +1,4 @@
-libvmod-wsinfo 0.1 (unreleased)
+libvmod-wsinfo 76.1 (unreleased)
 --------------------------------
 
 * Initial
